@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.markdave.sinomatakaw'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.markdave.sinomatakaw'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Fixed key so new APKs install over old ones without uninstalling.
+    signingConfigs {
+        fixed {
+            storeFile file('sinomatakaw.keystore')
+            storePassword 'sinomatakaw'
+            keyAlias 'sinomatakaw'
+            keyPassword 'sinomatakaw'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.fixed }
+        release { signingConfig signingConfigs.fixed; minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+}

@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Sino ang Matakaw?</title>
+<!--FONTS-->
+<style>
+@font-face{font-family:"Baloo 2";src:url("fonts/Baloo2.ttf") format("truetype");font-weight:400 800;font-display:swap}
+:root{
+  --ink:#2A1F3D;--paper:#FFF6E5;--card:#FFFFFF;--ube:#5B3A93;--ube2:#EFE6FB;--mango:#F7B731;--mango2:#FFF0C7;
+  --red:#C7362F;--green:#2E7D4F;--muted:#6B607A;--night:#1C1838;--line:#E7D9C2;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;font-size:17px;line-height:1.35}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0) 0;
+  background-image:repeating-linear-gradient(45deg,rgba(199,160,92,.07) 0 10px,transparent 10px 20px),repeating-linear-gradient(-45deg,rgba(199,160,92,.07) 0 10px,transparent 10px 20px)}
+#app{max-width:560px;margin:0 auto;padding:14px 14px 28px;min-height:100%}
+h1,h2,h3{margin:0;line-height:1.1}
+h1{font-size:34px;color:var(--ube);font-weight:800}
+h2{font-size:24px;color:var(--ube);font-weight:700}
+h3{font-size:19px;font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;margin:12px 0}
+.row{display:flex;gap:10px;align-items:center}
+.wrap{flex-wrap:wrap}
+.grow{flex:1 1 auto}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:12px 16px;min-height:48px;cursor:pointer;background:var(--ube);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+button.alt{background:var(--mango);color:var(--ink)}
+button.ghost{background:#fff;color:var(--ube);border:2px solid var(--ube);box-shadow:none}
+button.red{background:var(--red)}
+button.big{width:100%;font-size:20px;min-height:58px}
+button:disabled{opacity:.4;transform:none}
+input{font:inherit;font-size:19px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);width:100%;background:#fff;color:var(--ink)}
+.hero{text-align:center;padding:10px 0 4px}
+.hero .moon{font-size:62px;line-height:1}
+.avs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.av{font-size:30px;background:#fff;border:2px solid var(--line);border-radius:14px;min-height:56px;padding:4px;box-shadow:none;color:var(--ink)}
+.av.on{border-color:var(--ube);background:var(--ube2)}
+.pl{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.pl:last-child{border-bottom:0}
+.face{font-size:28px;width:44px;height:44px;border-radius:22px;background:var(--mango2);display:flex;align-items:center;justify-content:center;flex:0 0 44px;position:relative}
+.face.sleepy{filter:grayscale(.7);opacity:.75}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--ube2);color:var(--ube)}
+.tag.m{background:var(--night);color:var(--mango)}
+.tag.ok{background:#DDF3E5;color:var(--green)}
+.map{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.room{border-radius:16px;border:3px solid;padding:7px 7px 8px;min-height:112px;background:#fff;color:var(--ink);text-align:left;box-shadow:none;display:flex;flex-direction:column;gap:4px;position:relative;font-weight:400}
+.room .rn{font-weight:800;font-size:16px;line-height:1}
+.room .re{font-size:12px;opacity:.8}
+.room .who{display:flex;flex-wrap:wrap;gap:1px;font-size:21px;line-height:1.1}
+.room .who span.z{filter:grayscale(.8);opacity:.6}
+.room.here{outline:4px solid var(--mango);outline-offset:1px}
+.room.reach{cursor:pointer}
+.room.noreach{opacity:.45}
+.room.sel{outline:4px solid var(--ube);outline-offset:1px}
+.room .badge{position:absolute;top:5px;right:6px;font-size:16px}
+.acts{display:flex;flex-direction:column;gap:8px}
+.act{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none;text-align:left;font-weight:600}
+.act.on{border-color:var(--ube);background:var(--ube2)}
+.bar{height:16px;background:#F0E4CF;border-radius:999px;overflow:hidden}
+.bar>div{height:100%;background:var(--green);border-radius:999px;transition:width .6s}
+.track{display:flex;gap:5px;align-items:center}
+.track span{width:24px;height:24px;border-radius:12px;background:var(--ube2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ube)}
+.track span.past{background:var(--ube);color:#fff}
+.log div{padding:3px 0;font-size:15px}
+.night{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#3A2F6B,#120F26 70%);color:#F4EEFF;overflow:auto;z-index:5}
+.night .in{max-width:560px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0)) 16px 30px}
+.night h2{color:var(--mango)}
+.night .act{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.25)}
+.night .act.on{border-color:var(--mango);background:rgba(247,183,49,.2)}
+.stars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.stars button{font-size:40px;background:rgba(255,255,255,.07);box-shadow:none;min-height:84px}
+.rolecard{border-radius:24px;padding:26px 18px;text-align:center;margin:16px 0;border:4px solid var(--ube);background:#fff}
+.rolecard.m{background:var(--night);color:#FFF3D6;border-color:var(--mango)}
+.rolecard .big{font-size:76px;line-height:1}
+.center{text-align:center}
+.timer{font-size:40px;font-weight:800;color:var(--red)}
+.banner{border-radius:16px;padding:12px 14px;margin:10px 0;background:var(--mango2);border:2px solid var(--mango)}
+.vote{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.vote button{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none;display:flex;align-items:center;gap:8px;text-align:left}
+.vote button.on{border-color:var(--red);background:#FCE3E1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;z-index:9;font-size:15px;max-width:90%}
+.games button{width:100%;margin:4px 0;text-align:left}
+.hostbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.hostbar button{font-size:14px;min-height:40px;padding:8px 12px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ================= DATA ================= */
+const ROOMS=[
+ {n:"Kwarto",en:"Bedroom",e:"🛏️",a:"#3B4C9B"},
+ {n:"Banyo",en:"Bathroom",e:"🛁",a:"#1D6E73"},
+ {n:"Azotea",en:"Balcony",e:"🌺",a:"#A04A16"},
+ {n:"Bakuran",en:"Yard",e:"🌳",a:"#3E7A2C"},
+ {n:"Kusina",en:"Kitchen",e:"🍳",a:"#8A5A00"},
+ {n:"Sala",en:"Living room",e:"📺",a:"#8E2F66"}];
+const ADJ={0:[1,3],1:[0,2,4],2:[1,5],3:[0,4],4:[1,3,5],5:[2,4]};
+const CHUTES=[0,2,4];
+const START_ROOM=5, NIGHTS=7, MEET_SECS=90;
+const CHORES=[
+ ["Ayusin ang kama","Itupi ang kumot","Ligpitin ang tsinelas","Isabit ang uniporme"],
+ ["Magsipilyo","Isabit ang tuwalya","Punuin ang tabo","Linisin ang lababo"],
+ ["Sampayin ang damit","Diligan ang orchids","Itago ang saranggola","Ayusin ang mga paso"],
+ ["Pakainin ang manok","Diligan ang halaman","Pulutin ang bola","Isara ang gate"],
+ ["Hugasan ang baso","Punasan ang mesa","Takpan ang kanin","Isara ang garapon ng polvoron"],
+ ["Ayusin ang mga unan","Ligpitin ang laruan","Patayin ang TV","Pakainin si Muning"]];
+const AVS=[["🐱","Muning"],["🐶","Bantay"],["🐵","Tarsi"],["🐃","Kalabaw"],["🐢","Pawikan"],["🐓","Tandang"],["🦅","Agila"],["🐋","Butanding"],["🐷","Biik"],["🐸","Palaka"]];
+const PORT=8787;
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const hasAndroid=()=>typeof window.Android!=="undefined";
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+function dist(a,b){if(a===b)return 0;const seen={[a]:0},q=[a];while(q.length){const x=q.shift();for(const y of ADJ[x]){if(seen[y]==null){seen[y]=seen[x]+1;if(y===b)return seen[y];q.push(y)}}}return 9}
+function stepToward(a,b){if(a===b)return a;let best=a,bd=99;for(const y of ADJ[a]){const d=dist(y,b);if(d<bd){bd=d;best=y}}return best}
+
+/* ================= LOCAL STATE ================= */
+let MYKEY=store("sm_key");if(!MYKEY){MYKEY="k"+Math.random().toString(36).slice(2,10);store("sm_key",MYKEY)}
+const ME={name:store("sm_name")||"",av:+(store("sm_av")||0)};
+let MODE="home";        // home | join | offline | host | client
+let VIEW=null;          // current view to render
+let UI={sel:null,key:""};
+let NET={ws:null,cid:null,ip:"",hostIp:"",scanTimer:null,retry:0};
+
+/* ================= HOST ENGINE ================= */
+let G=null;
+function newLobby(){G={phase:"lobby",players:[],round:0,spills:[],log:[],realDone:0,shownDone:0,total:0,meeting:null,result:null,winner:null,seq:0,nextId:1,resultAt:0}}
+function P(key){return G.players.find(p=>p.key===key)}
+function freeAv(want){const used=G.players.map(p=>p.av);if(!used.includes(want))return want;for(let i=0;i<AVS.length;i++)if(!used.includes(i))return i;return want}
+function addPlayer(key,name,av,cid,bot){
+  let p=P(key);
+  if(p){p.cid=cid;p.conn=true;if(G.phase==="lobby"){p.name=name||p.name;p.av=freeAv2(p,av)}return p}
+  if(G.phase!=="lobby"||G.players.length>=10)return null;
+  av=freeAv(av);
+  p={id:G.nextId++,key,name:(name||AVS[av][1]).slice(0,14),av,cid,bot:!!bot,conn:true,role:"pinsan",room:START_ROOM,sleepy:false,couch:false,chores:[],bell:true,sub:false,act:null,vote:null,ready:false};
+  G.players.push(p);return p}
+function freeAv2(p,av){const used=G.players.filter(q=>q!==p).map(q=>q.av);if(!used.includes(av))return av;return p.av}
+function addBot(){const used=G.players.map(p=>p.av);const free=AVS.map((a,i)=>i).filter(i=>!used.includes(i));if(!free.length)return;const av=pick(free);addPlayer("bot"+Math.random().toString(36).slice(2,7),"Bot "+AVS[av][1],av,null,true)}
+function removeBot(){const b=[...G.players].reverse().find(p=>p.bot);if(b)G.players=G.players.filter(p=>p!==b)}
+function log(t){G.log.push(t);if(G.log.length>40)G.log.shift()}
+function snackers(){return G.players.filter(p=>p.role==="matakaw")}
+function activeSnackers(){return snackers().filter(p=>!p.couch)}
+function awakePinsans(){return G.players.filter(p=>p.role==="pinsan"&&!p.sleepy&&!p.couch)}
+function canVote(p){return !p.sleepy&&!p.couch}
+function actsAtDay(p){return !(p.role==="matakaw"&&p.couch)}
+
+function startGame(){
+  const n=G.players.length;if(n<4){toast("Kailangan ng 4 na manlalaro (add bots!)");return}
+  const nm=n>=7?2:1;
+  const order=shuffle(G.players.map((p,i)=>i));
+  G.players.forEach(p=>{Object.assign(p,{role:"pinsan",room:START_ROOM,sleepy:false,couch:false,chores:[],bell:true,sub:false,act:null,vote:null,ready:!!p.bot})});
+  for(let i=0;i<nm;i++)G.players[order[i]].role="matakaw";
+  const deck=shuffle(CHORES.flatMap((list,r)=>list.map(t=>({room:r,text:t}))));
+  G.players.forEach(p=>{
+    if(p.role==="pinsan")p.chores=deck.splice(0,3).map(c=>({...c,done:false,pretend:false}));
+    else p.chores=shuffle([0,1,2,3,4,5]).slice(0,3).map(r=>({room:r,text:"Pretend!",done:false,pretend:true}))});
+  G.total=G.players.filter(p=>p.role==="pinsan").length*3;G.realDone=0;G.shownDone=0;
+  G.round=0;G.spills=[];G.log=[];G.meeting=null;G.result=null;G.winner=null;
+  log("🏠 Sleepover sa bahay ni Lola! Lahat ay nasa Sala.");
+  G.phase="role";G.seq++;push();checkReady()}
+function checkReady(){if(G.phase==="role"&&G.players.every(p=>p.ready||!p.conn))beginDay()}
+
+function beginDay(){
+  G.phase="day";G.seq++;
+  G.players.forEach(p=>{p.act=null;p.sub=!actsAtDay(p)});
+  push();scheduleBots();checkAll()}
+function beginNight(){
+  G.phase="night";G.seq++;
+  G.players.forEach(p=>{p.act=null;p.sub=false});
+  buzzAll();push();scheduleBots();checkAll()}
+function buzzAll(){buzz(150)}
+function checkAll(){
+  if(G.phase!=="day"&&G.phase!=="night")return;
+  if(G.players.every(p=>p.sub||(!p.conn&&!p.bot)))(G.phase==="day"?resolveDay:resolveNight)()}
+function skipWaiting(){G.players.forEach(p=>{if(!p.sub){p.sub=true;p.act=G.phase==="day"?{to:p.room,kind:"rest"}:{kind:"none"}}});checkAll()}
+
+function validDay(p,a){
+  if(!a||typeof a.to!=="number")return false;
+  if(a.to!==p.room&&!ADJ[p.room].includes(a.to))return false;
+  if(a.kind==="chore"){const c=p.chores[a.idx];return !!c&&!c.done&&c.room===a.to&&!G.spills.includes(a.to)}
+  if(a.kind==="clean")return G.spills.includes(a.to);
+  if(a.kind==="bell")return p.bell;
+  return a.kind==="rest"}
+function resolveDay(){
+  const acts=G.players.filter(p=>actsAtDay(p)).map(p=>({p,a:p.act||{to:p.room,kind:"rest"}}));
+  acts.forEach(({p,a})=>{p.room=a.to});
+  let bell=null;
+  acts.forEach(({p,a})=>{if(a.kind==="clean"&&G.spills.includes(a.to)){G.spills=G.spills.filter(r=>r!==a.to);log(`🧽 Nilinis ni ${p.name} ang natapon sa ${ROOMS[a.to].n}.`)}});
+  acts.forEach(({p,a})=>{
+    if(a.kind==="chore"){const c=p.chores[a.idx];if(c&&!c.done&&!G.spills.includes(a.to)){c.done=true;if(!c.pretend)G.realDone++;log(`✅ May ginawang gawain si ${p.name} sa ${ROOMS[a.to].n}.`)}}
+    if(a.kind==="bell"&&p.bell&&!bell){p.bell=false;bell=p}});
+  if(G.realDone>=G.total){G.shownDone=G.realDone;return endGame("pinsan","Tapos lahat ng gawain! Malinis ang bahay ni Lola.")}
+  if(bell){log(`🔔 Pinatunog ni ${bell.name} ang kampana ni Lola!`);return startMeeting("bell",{by:bell.name},"night")}
+  beginNight()}
+
+function nightTargets(p){return G.players.filter(q=>q!==p&&q.room===p.room&&q.role!=="matakaw"&&!q.sleepy&&!q.couch)}
+function validNight(p,a){
+  if(!a)return false;
+  if(p.role!=="matakaw"||p.couch)return true;
+  if(a.kind==="pillow"){const t=G.players.find(q=>q.id===a.target);return !!t&&nightTargets(p).includes(t)}
+  if(a.kind==="spill")return typeof a.room==="number"&&a.room>=0&&a.room<6&&!G.spills.includes(a.room)&&G.spills.length<2;
+  if(a.kind==="chute")return CHUTES.includes(p.room)&&CHUTES.includes(a.room)&&a.room!==p.room;
+  return true}
+function resolveNight(){
+  G.round++;
+  const inc=[];
+  snackers().filter(p=>!p.couch).forEach(p=>{
+    const a=p.act||{kind:"none"};
+    if(a.kind==="pillow"){const t=G.players.find(q=>q.id===a.target);if(t&&!t.sleepy){t.sleepy=true;inc.push({victim:t.name,vid:t.id,room:t.room,with:G.players.filter(q=>q!==t&&q.room===t.room).map(q=>q.id)})}}});
+  snackers().filter(p=>!p.couch).forEach(p=>{const a=p.act||{};if(a.kind==="spill"&&!G.spills.includes(a.room)&&G.spills.length<2)G.spills.push(a.room)});
+  snackers().filter(p=>!p.couch).forEach(p=>{const a=p.act||{};if(a.kind==="chute"&&CHUTES.includes(p.room)&&CHUTES.includes(a.room))p.room=a.room});
+  G.shownDone=G.realDone;
+  log(`🌅 Magandang umaga! (Gabi ${G.round} ng ${NIGHTS})`);
+  inc.forEach(i=>{const names=i.with.map(id=>G.players.find(q=>q.id===id).name);log(`💤 Nakatulog si ${i.victim} sa ${ROOMS[i.room].n}! Kasama niya: ${names.join(", ")||"walang iba"}.`)});
+  if(winCheck())return;
+  if(G.round>=NIGHTS)return endGame("matakaw","Tumilaok na ang manok! May mga gawain pang hindi tapos.");
+  if(inc.length)return startMeeting("pillow",{inc},"day");
+  beginDay()}
+function winCheck(){
+  if(activeSnackers().length===0){endGame("pinsan","Nahuli ang lahat ng Matakaw!");return true}
+  if(awakePinsans().length<=activeSnackers().length){endGame("matakaw","Halos lahat ng pinsan ay nakatulog na!");return true}
+  return false}
+
+function startMeeting(reason,info,after){
+  G.phase="meeting";G.seq++;
+  G.meeting={reason,info,after,endsAt:Date.now()+MEET_SECS*1000};
+  G.players.forEach(p=>{p.vote=null});
+  buzzAll();push();scheduleBots()}
+function handleVote(p,t){
+  if(G.phase!=="meeting"||!canVote(p)||p.vote!=null)return;
+  if(t!=="skip"){const q=G.players.find(x=>x.id===t);if(!q||q.couch||q===p)return}
+  p.vote=t;push();
+  if(G.players.filter(q=>canVote(q)&&(q.conn||q.bot)).every(q=>q.vote!=null))resolveMeeting()}
+function resolveMeeting(){
+  if(G.phase!=="meeting")return;
+  const tally={};G.players.forEach(p=>{if(canVote(p)&&p.vote!=null&&p.vote!=="skip")tally[p.vote]=(tally[p.vote]||0)+1});
+  let best=null,bv=0,tie=false;
+  Object.keys(tally).forEach(k=>{const v=tally[k];if(v>bv){bv=v;best=+k;tie=false}else if(v===bv)tie=true});
+  let out=null;
+  if(best!=null&&!tie&&bv>=2){out=G.players.find(p=>p.id===best);out.couch=true;log(`🛋️ Pinaupo si ${out.name} sa sofa. Siya ay ${out.role==="matakaw"?"ang MATAKAW!":"isang Pinsan."}`)}
+  else log("🤷 Walang napaupo sa sofa.");
+  const counts=G.players.filter(p=>!p.couch||p===out).map(p=>({id:p.id,n:tally[p.id]||0}));
+  G.result={out:out?out.id:null,role:out?out.role:null,counts,skips:G.players.filter(p=>p.vote==="skip").length,after:G.meeting.after};
+  G.phase="result";G.seq++;G.resultAt=Date.now()+7000;push()}
+function afterResult(){
+  if(G.phase!=="result")return;
+  if(winCheck())return;
+  G.result.after==="night"?beginNight():beginDay()}
+function endGame(w,why){G.phase="end";G.winner={w,why};G.seq++;push()}
+
+/* ----- host message handling ----- */
+function hostHandle(key,m,cid){
+  if(!G)return;
+  if(m.t==="join"){addPlayer(key,m.name,m.av,cid,false);push();return}
+  const p=P(key);if(!p)return;
+  if(cid!=null){p.cid=cid;p.conn=true}
+  if(m.t==="ready"&&G.phase==="role"){p.ready=true;push();checkReady();return}
+  if(m.t==="act"){
+    if(p.sub)return;
+    if(G.phase==="day"&&actsAtDay(p)&&validDay(p,m.a)){p.act=m.a;p.sub=true;push();checkAll()}
+    else if(G.phase==="night"&&validNight(p,m.a)){p.act=m.a;p.sub=true;push();checkAll()}
+    return}
+  if(m.t==="vote"){handleVote(p,m.target);return}
+  if(m.t==="unvote"&&G.phase==="meeting"){return}
+}
+
+/* ----- bots ----- */
+function scheduleBots(){
+  const seq=G.seq;
+  G.players.filter(p=>p.bot||(window.__auto&&p.key===MYKEY)).forEach(p=>{
+    const d=G.phase==="meeting"?2500+Math.random()*6000:400+Math.random()*1200;
+    setTimeout(()=>{if(!G||G.seq!==seq)return;botAct(p)},window.__fast?5:d)})}
+function botAct(p){
+  if(G.phase==="day"&&!p.sub&&actsAtDay(p))hostHandle(p.key,{t:"act",a:botDay(p)});
+  else if(G.phase==="night"&&!p.sub)hostHandle(p.key,{t:"act",a:botNight(p)});
+  else if(G.phase==="meeting"&&canVote(p)&&p.vote==null)hostHandle(p.key,{t:"vote",target:botVote(p)})}
+function botDay(p){
+  const todo=p.chores.map((c,i)=>({...c,i})).filter(c=>!c.done);
+  if(G.spills.includes(p.room)&&p.role==="pinsan"&&Math.random()<.8)return {to:p.room,kind:"clean"};
+  let goal=null;
+  if(todo.length){todo.sort((a,b)=>dist(p.room,a.room)-dist(p.room,b.room));goal=todo[0].room}
+  else if(p.role==="pinsan"&&G.spills.length)goal=G.spills[0];
+  else{const busy=[0,1,2,3,4,5].sort((a,b)=>G.players.filter(q=>q.room===b).length-G.players.filter(q=>q.room===a).length);goal=Math.random()<.6?busy[0]:pick([p.room,...ADJ[p.room]])}
+  const to=stepToward(p.room,goal);
+  const here=todo.find(c=>c.room===to);
+  if(here&&!G.spills.includes(to))return {to,kind:"chore",idx:here.i};
+  if(G.spills.includes(to)&&p.role==="pinsan")return {to,kind:"clean"};
+  return {to,kind:"rest"}}
+function botNight(p){
+  if(p.role!=="matakaw"||p.couch)return {kind:"wish",star:Math.floor(Math.random()*6)};
+  const t=nightTargets(p);
+  const crowd=G.players.filter(q=>q.room===p.room&&q!==p).length;
+  if(t.length&&crowd>=2&&Math.random()<.85)return {kind:"pillow",target:pick(t).id};
+  if(t.length&&Math.random()<.35)return {kind:"pillow",target:pick(t).id};
+  if(G.spills.length<2&&Math.random()<.6){const rooms=[0,1,2,3,4,5].filter(r=>!G.spills.includes(r));return {kind:"spill",room:pick(rooms)}}
+  if(CHUTES.includes(p.room)&&Math.random()<.5)return {kind:"chute",room:pick(CHUTES.filter(r=>r!==p.room))};
+  return {kind:"none"}}
+function botVote(p){
+  const m=G.meeting;if(!m||m.reason!=="pillow")return "skip";
+  const score={};
+  m.info.inc.forEach(i=>i.with.forEach(id=>{score[id]=(score[id]||0)+1}));
+  let ids=Object.keys(score).map(Number).filter(id=>{const q=G.players.find(x=>x.id===id);return q&&!q.couch&&q!==p});
+  if(p.role==="matakaw")ids=ids.filter(id=>G.players.find(x=>x.id===id).role!=="matakaw");
+  if(!ids.length)return "skip";
+  const top=Math.max(...ids.map(id=>score[id]));const best=ids.filter(id=>score[id]===top);
+  if(p.role==="pinsan"&&best.length>2&&Math.random()<.5)return "skip";
+  return pick(best)}
+
+/* ----- views ----- */
+function viewFor(p){
+  const end=G.phase==="end";
+  const v={phase:G.phase,seq:G.seq,round:G.round,nights:NIGHTS,spills:[...G.spills],done:G.shownDone,total:G.total,log:G.log.slice(-8),winner:G.winner,
+    hostIp:NET.ip,isHost:p&&p.key===MYKEY,
+    players:G.players.map(q=>({id:q.id,name:q.name,av:q.av,bot:q.bot,conn:q.conn||q.bot,room:q.room,sleepy:q.sleepy,couch:q.couch,
+      role:(end||q.couch||(p&&p===q))?q.role:null,sub:q.sub,ready:q.ready,voted:q.vote!=null,mate:!!(p&&p.role==="matakaw"&&q.role==="matakaw"&&q!==p)}))};
+  if(p)v.me={id:p.id,role:p.role,chores:p.chores,bell:p.bell,room:p.room,sleepy:p.sleepy,couch:p.couch,sub:p.sub,ready:p.ready,vote:p.vote,canVote:canVote(p),act:p.act};
+  if(G.phase==="meeting")v.meeting={reason:G.meeting.reason,info:G.meeting.info,left:Math.max(0,Math.round((G.meeting.endsAt-Date.now())/1000)),voters:G.players.filter(q=>canVote(q)).length,voted:G.players.filter(q=>canVote(q)&&q.vote!=null).length};
+  if(G.phase==="result")v.result=G.result;
+  if(G.phase==="night"&&p&&p.role==="matakaw"&&!p.couch){v.targets=nightTargets(p).map(q=>q.id)}
+  return v}
+function push(){
+  if(!G)return;
+  G.players.forEach(p=>{
+    if(p.bot)return;
+    if(p.key===MYKEY){VIEW=viewFor(p);return}
+    if(MODE==="host"&&p.cid!=null&&p.conn)netSend({t:"view",to:p.cid,v:viewFor(p)})});
+  render()}
+setInterval(()=>{
+  if(!G)return;
+  if(G.phase==="meeting"){if(Date.now()>=G.meeting.endsAt)resolveMeeting();else push()}
+  else if(G.phase==="result"&&Date.now()>=G.resultAt)afterResult();
+},1000);
+
+/* ================= NETWORK ================= */
+function netSend(o){try{if(NET.ws&&NET.ws.readyState===1)NET.ws.send(JSON.stringify(o))}catch(e){}}
+function send(m){
+  if(MODE==="host"||MODE==="offline")hostHandle(MYKEY,m,null);
+  else netSend({...m,key:MYKEY,to:"host"})}
+function startHosting(){
+  if(!hasAndroid())return toast("Wi-Fi hosting works in the Android app.");
+  let ip="";try{ip=Android.startHost(ME.name||"Game")}catch(e){}
+  NET.ip=ip||"";MODE="host";newLobby();addPlayer(MYKEY,ME.name,ME.av,null,false);
+  setTimeout(()=>connectWs("127.0.0.1",true),400);push()}
+function startOffline(){MODE="offline";NET.ip="";newLobby();addPlayer(MYKEY,ME.name,ME.av,null,false);addBot();addBot();addBot();push()}
+function connectWs(host,asHost){
+  let ws;try{ws=new WebSocket("ws://"+host+":"+PORT)}catch(e){toast("Hindi makakonekta");return}
+  NET.ws=ws;
+  ws.onopen=()=>{NET.retry=0;if(!asHost)netSend({t:"join",name:ME.name,av:ME.av,key:MYKEY,to:"host"})};
+  ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}
+    if(m.t==="hello"){NET.cid=m.id;return}
+    if(asHost){
+      if(m.t==="left"){G.players.forEach(p=>{if(p.cid===m.id&&!p.bot&&p.key!==MYKEY)p.conn=false});push();checkAll();checkReady();return}
+      if(m.from!=null&&m.key&&m.t!=="view")hostHandle(m.key,m,m.from);
+    }else{
+      if(m.t==="view"){VIEW=m.v;render()}
+    }};
+  ws.onclose=()=>{
+    if(NET.ws!==ws)return;
+    if(asHost){if(MODE==="host")setTimeout(()=>connectWs("127.0.0.1",true),800);return}
+    if(MODE==="client"&&NET.retry<20){NET.retry++;toast("Nawala ang koneksyon… sinusubukan ulit");setTimeout(()=>connectWs(host,false),1500)}};
+}
+function joinGame(ip){
+  ip=(ip||"").trim();if(!ip)return;
+  MODE="client";NET.hostIp=ip;VIEW=null;stopScan();connectWs(ip,false);render();
+  setTimeout(()=>{if(MODE==="client"&&!VIEW){toast("Walang sagot mula sa "+ip)}},5000)}
+function startScan(){
+  if(!hasAndroid())return;
+  try{Android.startScan()}catch(e){}
+  clearInterval(NET.scanTimer);NET.scanTimer=setInterval(()=>{if(MODE==="join")renderGames()},1000)}
+function stopScan(){clearInterval(NET.scanTimer);try{hasAndroid()&&Android.stopScan()}catch(e){}}
+function leave(){
+  stopScan();
+  if(MODE==="host"){try{Android.stopHost()}catch(e){}}
+  const ws=NET.ws;NET.ws=null;try{ws&&ws.close()}catch(e){}
+  MODE="home";G=null;VIEW=null;render()}
+
+/* ================= RENDER ================= */
+function face(q,size){return `<span class="face ${q.sleepy?"sleepy":""}" ${size?`style="width:${size}px;height:${size}px;flex-basis:${size}px;font-size:${Math.round(size*.62)}px"`:""}>${AVS[q.av][0]}</span>`}
+function roleTag(r){return r==="matakaw"?`<span class="tag m">🍪 Matakaw</span>`:r==="pinsan"?`<span class="tag">⭐ Pinsan</span>`:""}
+function render(){
+  const app=$("#app");
+  if(MODE==="home")return app.innerHTML=homeHtml();
+  if(MODE==="join")return app.innerHTML=joinHtml(),renderGames();
+  if(!VIEW){app.innerHTML=`<div class="card center"><h2>Kumokonekta…</h2><p class="muted">Connecting to ${esc(NET.hostIp)}</p><button class="ghost" onclick="leave()">Bumalik</button></div>`;return}
+  const v=VIEW;const k=v.phase+":"+v.round+":"+v.seq;
+  if(UI.key!==k){UI.key=k;UI.sel=null;UI.star=null}
+  let h="";
+  if(v.phase==="lobby")h=lobbyHtml(v);
+  else if(v.phase==="role")h=roleHtml(v);
+  else if(v.phase==="day")h=dayHtml(v);
+  else if(v.phase==="night")h=dayHtml(v,true)+nightHtml(v);
+  else if(v.phase==="meeting")h=meetingHtml(v);
+  else if(v.phase==="result")h=resultHtml(v);
+  else if(v.phase==="end")h=endHtml(v);
+  app.innerHTML=h}
+
+function homeHtml(){
+  const avs=AVS.map((a,i)=>`<button class="av ${ME.av===i?"on":""}" onclick="setAv(${i})" aria-label="${a[1]}">${a[0]}</button>`).join("");
+  const andr=hasAndroid();
+  return `<div class="hero"><div class="moon">🌙🍪</div><h1>Sino ang Matakaw?</h1><div class="muted">Sleepover sa bahay ni Lola · 4–10 players</div></div>
+  <div class="card"><h3>Pangalan mo</h3><div style="height:6px"></div>
+  <input id="nm" maxlength="14" placeholder="${esc(AVS[ME.av][1])}" value="${esc(ME.name)}" oninput="ME.name=this.value;store('sm_name',this.value)">
+  <div style="height:12px"></div><h3>Pumili ng hayop</h3><div style="height:6px"></div><div class="avs">${avs}</div></div>
+  <div class="acts">
+   <button class="big" onclick="startHosting()" ${andr?"":"disabled"}>📡 Mag-host sa Wi-Fi</button>
+   <button class="big alt" onclick="goJoin()" ${andr?"":"disabled"}>🙋 Sumali sa laro</button>
+   <button class="big ghost" onclick="startOffline()">🤖 Practice with bots</button>
+  </div>
+  ${andr?"":`<p class="small muted center">Wi-Fi play works in the Android app. Here you can practise against bots.</p>`}
+  <div class="card small"><b>Paano laruin?</b> Most players are <b>Pinsan</b> 🌟 cleaning Lola’s house. One or two are secretly the <b>Matakaw</b> 🍪 — sneaking at night, putting cousins to sleep with an <b>unan</b> 💤 and making <b>tapon</b> 💧 messes. Finish all chores before the rooster crows 🐓, or catch the Matakaw at the family meeting!</div>`}
+function setAv(i){ME.av=i;store("sm_av",i);render()}
+function goJoin(){MODE="join";render();startScan()}
+function joinHtml(){
+  return `<div class="row"><button class="ghost" onclick="stopScan();MODE='home';render()">← Bumalik</button></div>
+  <div class="card"><h2>Mga laro sa Wi-Fi na ito</h2><p class="small muted">Make sure you’re on the same Wi-Fi as the host, or on the host phone’s hotspot.</p><div id="games" class="games"></div></div>
+  <div class="card"><h3>O i-type ang address</h3><p class="small muted">The host’s screen shows it, e.g. 192.168.1.23</p>
+  <div class="row"><input id="ipin" inputmode="decimal" placeholder="192.168.1.23" value="${esc(store("sm_ip")||"")}"><button onclick="store('sm_ip',$('#ipin').value);joinGame($('#ipin').value)">Sali</button></div></div>`}
+function renderGames(){
+  const box=$("#games");if(!box)return;
+  let list=[];try{list=JSON.parse(Android.getGames()||"[]")}catch(e){}
+  box.innerHTML=list.length?list.map(g=>`<button class="alt" onclick="joinGame('${esc(g.ip)}')">🏠 ${esc(g.name)}’s game <span class="small">· ${esc(g.ip)}</span></button>`).join(""):`<p class="muted">Naghahanap… <span class="small">(looking for games)</span></p>`}
+
+function lobbyHtml(v){
+  const host=v.isHost;
+  const pl=v.players.map(q=>`<div class="pl">${face(q)}<div class="grow"><b>${esc(q.name)}</b> ${q.bot?`<span class="tag">bot</span>`:""} ${q.conn?"":`<span class="tag">offline</span>`}</div></div>`).join("");
+  const n=v.players.length,nm=n>=7?2:1;
+  return `<div class="row"><button class="ghost" onclick="leave()">← Umalis</button><div class="grow"></div>${MODE==="host"?`<span class="tag ok">📡 Hosting</span>`:MODE==="offline"?`<span class="tag">🤖 Practice</span>`:`<span class="tag ok">Connected</span>`}</div>
+  <div class="card center"><h2>Naghihintay sa mga pinsan…</h2>
+   ${MODE==="host"?`<p>Others tap <b>Sumali sa laro</b> and pick your game, or type<br><span style="font-size:28px;font-weight:800;color:var(--ube)">${esc(v.hostIp||"(no Wi-Fi?)")}</span></p>`:""}
+   ${MODE==="client"?`<p class="muted">Hintayin ang host na magsimula.</p>`:""}</div>
+  <div class="card"><div class="row"><h3 class="grow">Mga manlalaro (${n}/10)</h3>${host?`<button class="ghost" onclick="hostCmd('-bot')">− Bot</button><button class="ghost" onclick="hostCmd('+bot')">+ Bot</button>`:""}</div>${pl}</div>
+  ${host?`<button class="big" onclick="hostCmd('start')" ${n<4?"disabled":""}>▶ Simulan! <span class="small">(${nm} Matakaw)</span></button>${n<4?`<p class="small muted center">Need at least 4 players — add bots to fill in.</p>`:""}`:""}`}
+function hostCmd(c){
+  if(!G||!(MODE==="host"||MODE==="offline"))return;
+  if(c==="+bot"&&G.phase==="lobby"){if(G.players.length<10)addBot();push()}
+  if(c==="-bot"&&G.phase==="lobby"){removeBot();push()}
+  if(c==="start")startGame();
+  if(c==="skip")skipWaiting();
+  if(c==="vote")resolveMeeting();
+  if(c==="next")afterResult();
+  if(c==="again"){G.phase="lobby";G.seq++;G.players.forEach(p=>{p.ready=false});push()}}
+
+function roleHtml(v){
+  const m=v.me.role==="matakaw";
+  const mates=v.players.filter(q=>q.mate);
+  const chores=v.me.chores.map(c=>`<div>${ROOMS[c.room].e} <b>${ROOMS[c.room].n}</b> — ${esc(c.text)}</div>`).join("");
+  const reveal=UI.reveal===v.seq;
+  return `<div class="center" style="margin-top:20px"><h2>Ang lihim mong papel</h2><p class="muted">Your secret role — don’t let anyone see your screen!</p></div>
+  ${reveal?`<div class="rolecard ${m?"m":""}"><div class="big">${m?"🍪":"⭐"}</div><h1 style="color:${m?"var(--mango)":"var(--ube)"}">${m?"Ikaw ang Matakaw!":"Pinsan ka!"}</h1>
+   <p>${m?"At night, put cousins to sleep with an unan 💤, make a tapon 💧 mess, or sneak through a lagusan 🌀. In the day, fake your chores. Huwag kang mahuli!":"Do your chores around Lola’s house, watch everyone, and find the Matakaw at the family meeting."}</p>
+   ${mates.length?`<p><b>Kasama mong Matakaw:</b> ${mates.map(q=>AVS[q.av][0]+" "+esc(q.name)).join(", ")}</p>`:""}
+   <div style="text-align:left;margin-top:10px" class="small">${m?"<b>Pretend chores</b> (they don’t count, but go do them so you look busy):":"<b>Your chores:</b>"}${chores}</div></div>
+   <button class="big" onclick="send({t:'ready'})" ${v.me.ready?"disabled":""}>${v.me.ready?"Naghihintay sa iba… ("+v.players.filter(q=>q.ready).length+"/"+v.players.length+")":"Handa na! ✋"}</button>`
+  :`<button class="rolecard" style="width:100%;font-size:20px;min-height:220px;color:var(--ube)" onclick="UI.reveal=${v.seq};render()">👀<br>Tap to see your role</button>`}`}
+
+function statusHtml(v){
+  const pct=v.total?Math.round(100*v.done/v.total):0;
+  const tr=[...Array(v.nights)].map((_,i)=>`<span class="${i<v.round?"past":""}">${i+1}</span>`).join("")+`<span style="background:none;font-size:20px">🐓</span>`;
+  return `<div class="card" style="padding:10px 12px"><div class="row small"><b>Gawain</b><div class="grow bar"><div style="width:${pct}%"></div></div><b>${v.done}/${v.total}</b></div>
+  <div class="row small" style="margin-top:6px"><b>Gabi</b><div class="track">${tr}</div></div></div>`}
+function mapHtml(v,reach,sel,onclick){
+  return `<div class="map">${ROOMS.map((r,i)=>{
+    const who=v.players.filter(q=>q.room===i&&!(q.couch&&q.role==="matakaw")).map(q=>`<span class="${q.sleepy?"z":""}" title="${esc(q.name)}">${AVS[q.av][0]}</span>`).join("");
+    const cls=["room",v.me&&v.me.room===i?"here":"",reach?(reach.includes(i)?"reach":"noreach"):"",sel===i?"sel":""].join(" ");
+    const badge=(v.spills.includes(i)?"💧":"")+(CHUTES.includes(i)?"🌀":"");
+    const tag=reach&&reach.includes(i)?"button":"div";
+    return `<${tag} class="${cls}" style="border-color:${r.a}" ${tag==="button"?`onclick="${onclick}(${i})"`:""}><span class="badge">${badge}</span><span class="rn" style="color:${r.a}">${r.e} ${r.n}</span><span class="re">${r.en}</span><span class="who">${who}</span></${tag}>`}).join("")}</div>`}
+function choresHtml(me){
+  return me.chores.map(c=>`<div class="small">${c.done?"✅":"⬜"} ${ROOMS[c.room].e} <b>${ROOMS[c.room].n}</b> — ${esc(c.text)}</div>`).join("")}
+function dayHtml(v,dim){
+  const me=v.me;const sel=UI.sel;
+  const reach=me&&!me.sub&&!dim&&!(me.role==="matakaw"&&me.couch)?[me.room,...ADJ[me.room]]:null;
+  const to=sel?sel.to:null;
+  let acts="";
+  if(reach&&to!=null){
+    const opts=[];
+    me.chores.forEach((c,i)=>{if(!c.done&&c.room===to)opts.push({kind:"chore",idx:i,label:`${v.spills.includes(to)?"🚫":"🧹"} Gawin: ${esc(c.text)}${c.pretend?" <span class='tag m'>pretend</span>":""}`,dis:v.spills.includes(to)})});
+    if(v.spills.includes(to))opts.push({kind:"clean",idx:null,label:"🧽 Linisin ang natapon (clean the spill)"});
+    if(me.bell)opts.push({kind:"bell",idx:null,label:"🔔 Patunugin ang kampana ni Lola (call a meeting)"});
+    opts.push({kind:"rest",idx:null,label:"😌 Pahinga lang (just walk / stay)"});
+    acts=`<div class="acts">${opts.map((o,j)=>`<button class="act ${sel.kind===o.kind&&sel.idx===o.idx?"on":""}" ${o.dis?"disabled":""} onclick="pickAct('${o.kind}',${o.idx==null?"null":o.idx})">${o.label}</button>`).join("")}</div>
+    <div style="height:10px"></div><button class="big" ${sel.kind?"":"disabled"} onclick="submitDay()">Tapos na ✓</button>`}
+  const waiting=v.players.filter(q=>!q.sub).map(q=>AVS[q.av][0]).join(" ");
+  return `${topbar(v)}${statusHtml(v)}
+  <div class="card" style="padding:10px">
+   <h3>${dim?"🌙 Gabi na…":(me&&me.sub?"Naghihintay sa iba…":me&&me.role==="matakaw"&&me.couch?"Nasa sofa ka 🛋️":"☀️ Saan ka pupunta?")}</h3>
+   <p class="small muted" style="margin:2px 0 0">${me&&!me.sub&&reach?(to==null?"Tap your room or a room next to it (doors connect rooms that touch).":"Now pick what to do in "+ROOMS[to].n+"."):(waiting?"Still choosing: "+waiting:"")}</p>
+   ${mapHtml(v,reach,to,"pickRoom")}
+   ${acts}
+   ${me&&me.sleepy?`<div class="banner small">💤 Antok ka — you can still walk and do chores, but stay quiet at meetings and don’t vote.</div>`:""}
+   ${me&&me.couch&&me.role!=="matakaw"?`<div class="banner small">🛋️ Nasa sofa ka — keep doing chores! Just stay quiet at meetings.</div>`:""}
+  </div>
+  ${me?`<div class="card"><div class="row"><h3 class="grow">${me.role==="matakaw"?"Pretend chores 🍪":"Mga gawain mo"}</h3>${roleTag(me.role)}</div>${choresHtml(me)}</div>`:""}
+  ${hostBar(v)}
+  <div class="card log"><h3>Balita</h3>${v.log.slice().reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div>
+  ${playersCard(v)}`}
+function topbar(v){return `<div class="row"><h2 class="grow">Sino ang Matakaw?</h2><button class="ghost" style="min-height:40px;padding:6px 12px" onclick="if(confirm('Umalis sa laro?'))leave()">Umalis</button></div>`}
+function hostBar(v){
+  if(!v.isHost)return "";
+  const b=[];
+  if(v.phase==="day"||v.phase==="night")b.push(`<button class="ghost" onclick="hostCmd('skip')">⏩ Huwag nang hintayin (skip waiting)</button>`);
+  return b.length?`<div class="hostbar">${b.join("")}</div>`:""}
+function playersCard(v){
+  return `<div class="card"><h3>Mga pinsan</h3>${v.players.map(q=>`<div class="pl">${face(q,36)}<div class="grow"><b>${esc(q.name)}</b> ${q.sleepy?"💤":""} ${q.couch?"🛋️":""} ${q.mate?`<span class="tag m">kasama</span>`:""} ${q.role&&(q.couch||v.phase==="end")?roleTag(q.role):""}</div><span class="small muted">${ROOMS[q.room].n}</span></div>`).join("")}</div>`}
+function pickRoom(i){UI.sel={to:i,kind:null,idx:null};render()}
+function pickAct(k,idx){UI.sel.kind=k;UI.sel.idx=idx;render()}
+function submitDay(){const s=UI.sel;if(!s||!s.kind)return;send({t:"act",a:{to:s.to,kind:s.kind,idx:s.idx}})}
+
+function nightHtml(v){
+  const me=v.me;const m=me&&me.role==="matakaw"&&!me.couch;
+  let body;
+  if(me.sub)body=`<div class="center" style="margin-top:60px"><div style="font-size:60px">😴</div><h2>Zzz…</h2><p>Naghihintay hanggang umaga…</p><p class="small" style="opacity:.7">Still waiting: ${v.players.filter(q=>!q.sub).length}</p></div>`;
+  else if(m){
+    const t=(v.targets||[]).map(id=>v.players.find(q=>q.id===id));
+    const s=UI.sel||{};
+    const opts=[];
+    t.forEach(q=>opts.push({k:"pillow",x:q.id,l:`💤 Unan kay ${AVS[q.av][0]} ${esc(q.name)}`}));
+    if(v.spills.length<2)ROOMS.forEach((r,i)=>{if(!v.spills.includes(i))opts.push({k:"spill",x:i,l:`💧 Itapon ang juice sa ${r.e} ${r.n}`})});
+    if(CHUTES.includes(me.room))CHUTES.filter(r=>r!==me.room).forEach(r=>opts.push({k:"chute",x:r,l:`🌀 Lagusan papunta sa ${ROOMS[r].e} ${ROOMS[r].n}`}));
+    opts.push({k:"none",x:null,l:"🤫 Wala muna (do nothing)"});
+    body=`<h2>🍪 Gabi na, Matakaw…</h2><p>Pumili ng isang palihim na gawain. You’re in <b>${ROOMS[me.room].e} ${ROOMS[me.room].n}</b>.${t.length?"":" Nobody here to put to sleep."}</p>
+    <div class="acts">${opts.map(o=>`<button class="act ${s.k===o.k&&s.x===o.x?"on":""}" onclick="UI.sel={k:'${o.k}',x:${o.x==null?"null":o.x}};render()">${o.l}</button>`).join("")}</div>
+    <div style="height:12px"></div><button class="big alt" ${s.k?"":"disabled"} onclick="submitNight()">Gawin ✓</button>`}
+  else body=`<h2>🌙 Gabi na… tulog na ang lahat</h2><p>Habang natutulog, pumili ng bituin para sa iyong hiling. <span class="small" style="opacity:.75">(Pick a wishing star — everyone taps something, so nobody can tell who the Matakaw is!)</span></p>
+    <div class="stars">${["⭐","🌟","✨","💫","🌠","⭐"].map((s,i)=>`<button onclick="send({t:'act',a:{kind:'wish',star:${i}}})">${s}</button>`).join("")}</div>`;
+  return `<div class="night"><div class="in">${body}${hostBarNight(v)}</div></div>`}
+function hostBarNight(v){return v.isHost?`<div class="hostbar" style="margin-top:24px"><button class="ghost" style="background:transparent;color:#fff;border-color:#fff" onclick="hostCmd('skip')">⏩ Skip waiting</button></div>`:""}
+function submitNight(){const s=UI.sel;if(!s||!s.k)return;const a={kind:s.k};if(s.k==="pillow")a.target=s.x;if(s.k==="spill"||s.k==="chute")a.room=s.x;send({t:"act",a})}
+
+function meetingHtml(v){
+  const m=v.meeting,me=v.me;
+  let why="";
+  if(m.reason==="bell")why=`🔔 Pinatunog ni <b>${esc(m.info.by)}</b> ang kampana ni Lola!`;
+  else why=m.info.inc.map(i=>{const w=i.with.map(id=>{const q=v.players.find(x=>x.id===id);return q?AVS[q.av][0]+" "+esc(q.name):""}).join(", ");return `💤 Nakatulog si <b>${esc(i.victim)}</b> sa ${ROOMS[i.room].e} <b>${ROOMS[i.room].n}</b>.<br><span class="small">Kasama niya kagabi: ${w||"walang iba"}</span>`}).join("<br>");
+  const cand=v.players.filter(q=>!q.couch&&q.id!==me.id);
+  const vote=me.canVote?(me.vote==null?`<div class="vote">${cand.map(q=>`<button onclick="castVote(${q.id})">${face(q,32)}<span>${esc(q.name)}</span></button>`).join("")}</div><div style="height:8px"></div><button class="big ghost" onclick="castVote('skip')">🤷 Hindi sigurado (skip)</button>`
+     :`<div class="banner center">✋ Bumoto ka na. Waiting for others (${m.voted}/${m.voters})</div>`)
+     :`<div class="banner center">${me.sleepy?"💤 Antok ka — stay quiet and listen!":"🛋️ Nasa sofa ka — stay quiet and listen!"}</div>`;
+  return `${topbar(v)}<div class="card center"><h2>👵 Family Meeting!</h2><p>${why}</p>
+   <div class="timer">${m.left}s</div><p class="small muted">Pag-usapan! Where were you? Who did you see? Who moved at night? Then vote.</p></div>
+  <div class="card"><h3>Sino ang Matakaw?</h3><div style="height:8px"></div>${vote}<p class="small muted center">Need at least 2 votes on the same person to send them to the sofa.</p></div>
+  ${v.isHost?`<div class="hostbar"><button class="ghost" onclick="hostCmd('vote')">⏱ Tapos na ang usapan — count votes now</button></div>`:""}
+  ${mapHtml(v,null,null,"")}
+  ${playersCard(v)}`}
+function castVote(t){send({t:"vote",target:t})}
+function resultHtml(v){
+  const r=v.result;const out=r.out!=null?v.players.find(q=>q.id===r.out):null;
+  const counts=r.counts.filter(c=>c.n>0).sort((a,b)=>b.n-a.n).map(c=>{const q=v.players.find(x=>x.id===c.id);return `<div class="pl">${face(q,32)}<div class="grow">${esc(q.name)}</div><b>${"✋".repeat(c.n)}</b></div>`}).join("");
+  return `<div class="card center" style="margin-top:24px">${out?`<div style="font-size:64px">${AVS[out.av][0]}🛋️</div><h2>${esc(out.name)} ay pinaupo sa sofa!</h2>
+   <div class="rolecard ${out.role==="matakaw"?"m":""}" style="padding:14px"><h2 style="color:${out.role==="matakaw"?"var(--mango)":"var(--ube)"}">${out.role==="matakaw"?"🍪 Siya ang MATAKAW!":"⭐ Isang Pinsan lang pala…"}</h2></div>`
+   :`<div style="font-size:64px">🤷</div><h2>Walang napaupo sa sofa</h2><p class="muted">Not enough votes on one person.</p>`}
+   <div style="text-align:left">${counts}${r.skips?`<div class="small muted">Skip: ${r.skips}</div>`:""}</div></div>
+   ${v.isHost?`<button class="big" onclick="hostCmd('next')">Ituloy ▶</button>`:`<p class="center muted">Itutuloy ng host…</p>`}`}
+function endHtml(v){
+  const w=v.winner.w==="pinsan";
+  const mine=v.me&&((w&&v.me.role==="pinsan")||(!w&&v.me.role==="matakaw"));
+  return `<div class="rolecard ${w?"":"m"}" style="margin-top:24px"><div class="big">${w?"🧹⭐":"🍪🌙"}</div>
+   <h1 style="color:${w?"var(--ube)":"var(--mango)"}">${w?"Panalo ang mga Pinsan!":"Panalo ang Matakaw!"}</h1><p>${esc(v.winner.why)}</p>${v.me?`<h3>${mine?"🎉 Panalo ka!":"Sa susunod na lang! 💪"}</h3>`:""}</div>
+  <div class="card"><h3>Sino-sino sila?</h3>${v.players.map(q=>`<div class="pl">${face(q,36)}<div class="grow"><b>${esc(q.name)}</b></div>${roleTag(q.role)}</div>`).join("")}</div>
+  ${v.isHost?`<button class="big" onclick="hostCmd('again')">🔁 Laro ulit</button>`:`<p class="center muted">Hintayin ang host para sa bagong laro.</p>`}
+  <div style="height:10px"></div><button class="big ghost" onclick="leave()">Umalis</button>`}
+
+window.addEventListener("load",render);
+</script>
+</body>
+</html>
